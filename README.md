@@ -5,4 +5,8 @@
    
    
 -- Updated strings.xml file path in /scripts/fcm_config_files_process.js 
-(using fix suggested in this issue https://github.com/fechanique/cordova-plugin-fcm/issues/481#issuecomment-376008472)   
+(using fix suggested in this issue https://github.com/fechanique/cordova-plugin-fcm/issues/481#issuecomment-376008472)
+
+-- Updated plugin logic to save multiple pushes (in case multiple ones are received and the app/view is not yet ready)
+E.g.: app is being started up, which may take a couple of seconds, and multiple messages could be received during that time...
+

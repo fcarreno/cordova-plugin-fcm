@@ -10,25 +10,27 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.os.Bundle;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class FCMPlugin extends CordovaPlugin {
- 
+
 	private static final String TAG = "FCMPlugin";
-	
+
 	public static CordovaWebView gWebView;
 	public static String notificationCallBack = "FCMPlugin.onNotificationReceived";
 	public static String tokenRefreshCallBack = "FCMPlugin.onTokenRefreshReceived";
 	public static Boolean notificationCallBackReady = false;
-	public static Map<String, Object> lastPush = null;
-	 
+  private static List<Map<String, Object>> pendingPushes = new ArrayList<Map<String,Object>>();
+
+
 	public FCMPlugin() {}
-	
+
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
 		super.initialize(cordova, webView);
 		gWebView = webView;
@@ -36,11 +38,11 @@ public class FCMPlugin extends CordovaPlugin {
 		FirebaseMessaging.getInstance().subscribeToTopic("android");
 		FirebaseMessaging.getInstance().subscribeToTopic("all");
 	}
-	 
+
 	public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
 		Log.d(TAG,"==> FCMPlugin execute: "+ action);
-		
+
 		try{
 			// READY //
 			if (action.equals("ready")) {
@@ -66,8 +68,8 @@ public class FCMPlugin extends CordovaPlugin {
 				notificationCallBackReady = true;
 				cordova.getActivity().runOnUiThread(new Runnable() {
 					public void run() {
-						if(lastPush != null) FCMPlugin.sendPushPayload( lastPush );
-						lastPush = null;
+            if(!pendingPushes.isEmpty()) FCMPlugin.processPendingPushes();
+            pendingPushes.clear();
 						callbackContext.success();
 					}
 				});
@@ -106,13 +108,13 @@ public class FCMPlugin extends CordovaPlugin {
 			callbackContext.error(e.getMessage());
 			return false;
 		}
-		
+
 		//cordova.getThreadPool().execute(new Runnable() {
 		//	public void run() {
 		//	  //
 		//	}
 		//});
-		
+
 		//cordova.getActivity().runOnUiThread(new Runnable() {
         //    public void run() {
         //      //
@@ -120,7 +122,7 @@ public class FCMPlugin extends CordovaPlugin {
         //});
 		return true;
 	}
-	
+
 	public static void sendPushPayload(Map<String, Object> payload) {
 		Log.d(TAG, "==> FCMPlugin sendPushPayload");
 		Log.d(TAG, "\tnotificationCallBackReady: " + notificationCallBackReady);
@@ -134,16 +136,35 @@ public class FCMPlugin extends CordovaPlugin {
 			String callBack = "javascript:" + notificationCallBack + "(" + jo.toString() + ")";
 			if(notificationCallBackReady && gWebView != null){
 				Log.d(TAG, "\tSent PUSH to view: " + callBack);
-				gWebView.sendJavascript(callBack);
+        gWebView.sendJavascript(callBack);
+				// TODO: implement Plugin result, as suggested in the .sendJavascript deprecated documentation.
+        // PluginResult dataResult = new PluginResult(PluginResult.Status.OK);
+        // dataResult.setKeepCallback(true);
+        // savedCallbackContext.sendPluginResult(dataResult);
+
+        // Maybe have a static callbackContent property for notifications, setting it on registerNotification success above (execute method)?
+        // Check for similar example of callbackContext saved from execute (on IntentShim), under registerBroadcastReceiver case inside execute...
+
+
 			}else {
 				Log.d(TAG, "\tView not ready. SAVED NOTIFICATION: " + callBack);
-				lastPush = payload;
+				pendingPushes.add(payload);
+
 			}
 		} catch (Exception e) {
 			Log.d(TAG, "\tERROR sendPushToView. SAVED NOTIFICATION: " + e.getMessage());
-			lastPush = payload;
+      pendingPushes.add(payload);
 		}
 	}
+
+  public static void processPendingPushes() {
+
+	  Log.d(TAG, "==> FCMPlugin processPendingPushes (" + Integer.toString(pendingPushes.size()) + " pushes pending...)" );
+	  for(Map<String, Object> pendingPush: pendingPushes)
+      FCMPlugin.sendPushPayload(pendingPush);
+
+    Log.d(TAG, "==> FCMPlugin processPendingPushes (finished processing!" );
+  }
 
 	public static void sendTokenRefresh(String token) {
 		Log.d(TAG, "==> FCMPlugin sendRefreshToken");
@@ -154,10 +175,11 @@ public class FCMPlugin extends CordovaPlugin {
 			Log.d(TAG, "\tERROR sendRefreshToken: " + e.getMessage());
 		}
 	}
-  
+
   @Override
 	public void onDestroy() {
 		gWebView = null;
 		notificationCallBackReady = false;
+		pendingPushes.clear();
 	}
-} 
+}
