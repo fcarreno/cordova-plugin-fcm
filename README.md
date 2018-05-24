@@ -10,3 +10,8 @@
 -- Updated plugin logic to save multiple pushes (in case multiple ones are received and the app/view is not yet ready)
 E.g.: app is being started up, which may take a couple of seconds, and multiple messages could be received during that time...
 
+
+# Installation:
+```
+$ ionic cordova plugin add @fcarreno/cordova-plugin-fcm
+```
