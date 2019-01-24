@@ -36,6 +36,12 @@ FCMPlugin.prototype.onTokenRefreshReceived = function(token){
 	console.log("Received token refresh")
 	console.log(token)
 }
+
+// Dismiss notification by id //
+FCMPlugin.prototype.dismissNotification = function( notificationId, success, error ){
+    exec(success, error, "FCMPlugin", 'dismissNotification', [notificationId]);
+}
+
 // FIRE READY //
 exec(function(result){ console.log("FCMPlugin Ready OK") }, function(result){ console.log("FCMPlugin Ready ERROR") }, "FCMPlugin",'ready',[]);
 
