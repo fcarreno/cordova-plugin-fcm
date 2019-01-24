@@ -1,18 +1,25 @@
 {
-  "version": "2.1.9",
+  "version": "2.1.10",
   "name": "@fcarreno/cordova-plugin-fcm",
   "cordova_name": "Cordova FCM Push Plugin",
   "description": "Google Firebase Cloud Messaging Cordova Push Plugin",
   "license": "MIT",
   "repo": "",
   "issue": "",
+  "cordova": {
+    "id": "cordova-plugin-fcm",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
   "author": {
     "name": "Felipe Echanique Torres",
     "email": "felipe.echanique@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fcarreno/cordova-plugin-fcm"
+    "url": "https://github.com/fcarreno/cordova-plugin-fcm.git"
   },
   "keywords": [
     "ecosystem:cordova",
@@ -25,10 +32,6 @@
     "ios",
     "android",
     "cordova"
-  ],
-  "platforms": [
-    "android",
-    "ios"
   ],
   "engines": [],
   "englishdoc": ""

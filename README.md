@@ -12,7 +12,10 @@ With the following (Android only...):
 * Added new action to FCMPlugin to allow consuming apps to dismiss a notification by its Id (remove from Android status bar)
 
 
-# Installation:
+#### Installation:
 ```
 $ ionic cordova plugin add @fcarreno/cordova-plugin-fcm
 ```
+
+#### Note:
+Please check [installation instructions](https://github.com/fechanique/cordova-plugin-fcm#installation) of original plugin for pre-requisites, prior to proceeding with installation command above.
