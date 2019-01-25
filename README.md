@@ -19,3 +19,5 @@ $ ionic cordova plugin add @fcarreno/cordova-plugin-fcm
 
 #### Note:
 Please check [installation instructions](https://github.com/fechanique/cordova-plugin-fcm#installation) of original plugin for pre-requisites, prior to proceeding with installation command above.
+
+In addition, in order to use feature that allows dismissing a notification, please use this updated plugin wrapper (instead of default one provided by ionic): https://www.npmjs.com/package/@fcarreno/ionic-native-fcm
