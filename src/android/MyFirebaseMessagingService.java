@@ -90,7 +90,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // (it looks like it gets created/formated based on system timezone...so just using default...)
         // Docs: https://stackoverflow.com/questions/6782185/convert-timestamp-long-to-normal-date-format
         Date date = new Date(System.currentTimeMillis());
-        Format format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"); // Adding local timezone offset ('Z') at the end (so Angular date pipe takes it)
+        //format.setTimeZone(TimeZone.getDefault()); // NOTE: user's/device local timezone offset (e.g.: '+03:00') will be added if not specified...
         intent.putExtra("date", format.format(date));
 
         // NOTE: using PendingIntent.FLAG_UPDATE_CURRENT instead of FLAG_ONE_SHOT so as a notification that was tapped, but did not make it to the app
