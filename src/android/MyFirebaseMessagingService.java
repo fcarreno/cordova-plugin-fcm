@@ -110,7 +110,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //NotificationCompat.Action no = new NotificationCompat.Action(R.mipmap.no ,"No",pendingIntent);
         //NotificationCompat.Action action = new NotificationCompat.Action(getApplicationInfo().icon,"Hooolissss",pendingIntent);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, FCMPlugin.CHANNEL_ID)
                 .setSmallIcon(getApplicationInfo().icon)
                 .setContentTitle(title)
                 .setContentText(summary)

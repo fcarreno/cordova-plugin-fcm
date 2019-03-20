@@ -5,8 +5,11 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CordovaInterface;
 
+import android.annotation.TargetApi;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -30,7 +33,8 @@ public class FCMPlugin extends CordovaPlugin {
 	public static Boolean notificationCallBackReady = false;
   //private static List<Map<String, Object>> pendingPushes = new ArrayList<Map<String,Object>>();
   public static Map<String, Object> lastPush = null;
-
+  public static String CHANNEL_ID = "ar.com.cualify-main";
+  public static String CHANNEL_NAME = "Main";
 
 	public FCMPlugin() {}
 
@@ -40,7 +44,31 @@ public class FCMPlugin extends CordovaPlugin {
 		Log.d(TAG, "==> FCMPlugin initialize");
 		FirebaseMessaging.getInstance().subscribeToTopic("android");
 		FirebaseMessaging.getInstance().subscribeToTopic("all");
+    createChannels();
 	}
+
+	@TargetApi(26)
+	private void createChannels(){
+
+    Log.d(TAG, "==> FCMPlugin createChannels function");
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+      // Sets whether notifications posted to this channel should display notification lights
+      // androidChannel.enableLights(true);
+      // Sets whether notification posted to this channel should vibrate.
+      // androidChannel.enableVibration(true);
+      // Sets the notification light color for notifications posted to this channel
+      // androidChannel.setLightColor(Color.GREEN);
+      // Sets whether notifications posted to this channel appear on the lockscreen or not
+      // androidChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+
+      NotificationManager notificationManager = (NotificationManager) cordova.getActivity().getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+      notificationManager.createNotificationChannel(channel);
+      Log.d(TAG, "==> FCMPlugin Channel created!");
+    }
+  }
+
+
 
 	public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
