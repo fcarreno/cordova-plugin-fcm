@@ -11,6 +11,8 @@ With the following (Android only...):
 
 * Added new action to FCMPlugin to allow consuming apps to dismiss a notification by its Id (remove from Android status bar)
 
+* Added support to send push payload -when app is open- based on a flag received as part of data/extras.
+
 
 #### Installation:
 ```

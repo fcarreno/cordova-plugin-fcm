@@ -49,7 +49,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         Map<String, Object> data = new HashMap<String, Object>();
-        //data.put("wasTapped", false);
         for (String key : remoteMessage.getData().keySet()) {
                     Object value = remoteMessage.getData().get(key);
                     Log.d(TAG, "\tKey: " + key + " Value: " + value);
@@ -57,9 +56,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         Log.d(TAG, "\tNotification Data: " + data.toString());
-        //FCMPlugin.sendPushPayload( data );
-        //sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody(), data);
         sendNotification(data.get("title").toString(), data.get("summary").toString(), data);
+
+        // Besides showing the notification on status bar (above),
+        // we want to push the data to the app, if it's currently running in foreground
+        // (in order to react to/store/manipulate the data in case the user misses the notification).
+        if(data.containsKey("tryForegroundDataPush")){
+          FCMPlugin.sendPushPayload( data, false );
+        }
 
     }
     // [END receive_message]

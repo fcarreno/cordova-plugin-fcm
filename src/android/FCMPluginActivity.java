@@ -27,16 +27,11 @@ public class FCMPluginActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "==> FCMPluginActivity onCreate");
-        //boolean tapped = false; // Not using tapped flag any more...since a notification will always be tapped...
-        //(showing a notification for foreground messages too...)
-        //Anyway, tapped indicator/flag will have to be set as string, when adding it to the extras...(based on the logic below)
-        //Otherwise (e.g.: if set as boolean, it will trigger a warning...)
 
         Map<String, Object> data = new HashMap<String, Object>();
         if (getIntent().getExtras() != null) {
-          //tapped = true;
           Log.d(TAG, "==> USER TAPPED NOTFICATION");
-          //data.put("wasTapped", true);
+          data.put("wasTapped", true);
           for (String key : getIntent().getExtras().keySet()) {
                     String value = getIntent().getExtras().getString(key);
                     Log.d(TAG, "\tKey: " + key + " Value: " + value);
@@ -44,13 +39,13 @@ public class FCMPluginActivity extends Activity {
            }
         }
 
-        FCMPlugin.sendPushPayload(data);
+        FCMPlugin.sendPushPayload(data, true);
         finish();
-        forceMainActivityReload(/*tapped*/);
+        forceMainActivityReload();
 
     }
 
-    private void forceMainActivityReload(/*boolean tapped*/) {
+    private void forceMainActivityReload() {
         PackageManager pm = getPackageManager();
         Intent launchIntent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
         launchIntent.putExtra("launchedFromNotification", true);

@@ -99,7 +99,7 @@ public class FCMPlugin extends CordovaPlugin {
 				notificationCallBackReady = true;
 				cordova.getActivity().runOnUiThread(new Runnable() {
 					public void run() {
-            if(lastPush != null) FCMPlugin.sendPushPayload( lastPush );
+            if(lastPush != null) FCMPlugin.sendPushPayload( lastPush, false );
             lastPush = null;
             //if(!pendingPushes.isEmpty()) FCMPlugin.processPendingPushes();
             //pendingPushes.clear();
@@ -158,7 +158,7 @@ public class FCMPlugin extends CordovaPlugin {
 		return true;
 	}
 
-	public static void sendPushPayload(Map<String, Object> payload) {
+	public static void sendPushPayload(Map<String, Object> payload, boolean saveIfNotReady) {
 		Log.d(TAG, "==> FCMPlugin sendPushPayload");
 		Log.d(TAG, "\tnotificationCallBackReady: " + notificationCallBackReady);
 		Log.d(TAG, "\tgWebView: " + gWebView);
@@ -180,14 +180,19 @@ public class FCMPlugin extends CordovaPlugin {
 
         // Maybe have a static callbackContent property for notifications, setting it on registerNotification success above (execute method)?
         // Check for similar example of callbackContext saved from execute (on IntentShim), under registerBroadcastReceiver case inside execute...
-			}else {
-          Log.d(TAG, "\tView not ready. SAVED NOTIFICATION: " + callBack);
-          lastPush = payload;
-          //pendingPushes.add(payload);
 			}
+			else{
+			  if(saveIfNotReady){
+          Log.d(TAG, "\tWebView is not available - Buffering message payload");
+          lastPush = payload;
+        }
+      }
 		} catch (Exception e) {
-        Log.d(TAG, "\tERROR sendPushToView. SAVED NOTIFICATION: " + e.getMessage());
-        lastPush = payload;
+        Log.d(TAG, "\tERROR. WebView is not available" + e.getMessage());
+        if(saveIfNotReady){
+          Log.d(TAG, "\tBuffering message payload");
+          lastPush = payload;
+        }
         //pendingPushes.add(payload);
 		}
 	}
