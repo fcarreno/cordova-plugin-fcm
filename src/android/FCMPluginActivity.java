@@ -48,7 +48,9 @@ public class FCMPluginActivity extends Activity {
     private void forceMainActivityReload() {
         PackageManager pm = getPackageManager();
         Intent launchIntent = pm.getLaunchIntentForPackage(getApplicationContext().getPackageName());
-        launchIntent.putExtra("launchedFromNotification", true);
+        if(!getIntent().hasExtra("notificationOnly")){
+          launchIntent.putExtra("launchedFromDataNotification", true);
+        }
         startActivity(launchIntent);
     }
 

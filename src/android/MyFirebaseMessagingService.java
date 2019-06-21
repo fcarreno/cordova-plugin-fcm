@@ -19,7 +19,7 @@ import java.util.Random;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-//import ar.com.andobuscando.R;
+//import ar.com.cualify.R;
 
 /**
  * Created by Felipe Echanique on 08/06/2016.
@@ -43,11 +43,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
         Log.d(TAG, "==> MyFirebaseMessagingService onMessageReceived");
 
-        if( remoteMessage.getNotification() != null){
-          Log.d(TAG, "\tNotification Title: " + remoteMessage.getNotification().getTitle());
-          Log.d(TAG, "\tNotification Message: " + remoteMessage.getNotification().getBody());
-        }
-
         Map<String, Object> data = new HashMap<String, Object>();
         for (String key : remoteMessage.getData().keySet()) {
                     Object value = remoteMessage.getData().get(key);
@@ -55,25 +50,36 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             data.put(key, value);
         }
 
-        Log.d(TAG, "\tNotification Data: " + data.toString());
-        sendNotification(data.get("title").toString(), data.get("summary").toString(), data);
+        if( remoteMessage.getNotification() != null){
 
-        // Besides showing the notification on status bar (above),
-        // we want to push the data to the app, if it's currently running in foreground
-        // (in order to react to/store/manipulate the data in case the user misses the notification).
-        if(data.containsKey("tryForegroundDataPush")){
-          FCMPlugin.sendPushPayload( data, false );
+          Log.d(TAG, "\tNotification Title: " + remoteMessage.getNotification().getTitle());
+          Log.d(TAG, "\tNotification Message: " + remoteMessage.getNotification().getBody());
+          simpleNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
+
+        } else if(!data.keySet().isEmpty()){
+          Log.d(TAG, "\tNotification Data: " + data.toString());
+          customNotification(data.get("title").toString(), data.get("summary").toString(), data);
+
+          // For data messages, besides showing a custom notification on status bar (above),
+          // we want to push the data to the app, if it's currently running in foreground
+          // (in order to store/manipulate the data/event in case the user misses the notification).
+          if(data.containsKey("tryForegroundDataPush")){
+            FCMPlugin.sendPushPayload( data, false );
+          }
         }
+
+
+
 
     }
     // [END receive_message]
 
     /**
-     * Create and show a simple notification containing the received FCM message.
+     * Create and show a custom notification containing the received FCM -data- message.
      * @param title FCM message title received.
      * @param summary FCM message body received.
      */
-    private void sendNotification(String title, String summary, Map<String, Object> data) {
+    private void customNotification(String title, String summary, Map<String, Object> data) {
         Intent intent = new Intent(this, FCMPluginActivity.class);
         //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // NOTE: with just above line only - it didn't work
@@ -114,8 +120,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //NotificationCompat.Action no = new NotificationCompat.Action(R.mipmap.no ,"No",pendingIntent);
         //NotificationCompat.Action action = new NotificationCompat.Action(getApplicationInfo().icon,"Hooolissss",pendingIntent);
 
+
+        //.setSmallIcon(R.drawable.notification_icon)
+        int notificationIconId = getApplicationContext().getResources().getIdentifier("notification_icon" , "drawable", getPackageName());
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, FCMPlugin.CHANNEL_ID)
-                .setSmallIcon(getApplicationInfo().icon)
+                .setSmallIcon(notificationIconId)
                 .setContentTitle(title)
                 .setContentText(summary)
                 //.setAutoCancel(true) // Notifications will be cancelled/cleared only after app confirmed its reception via notification details page... (default is false)
@@ -135,4 +144,39 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //StatusBarNotification[] notifications = notificationManager.getActiveNotifications(); // Avail only from API level 23 (Android 6.0)
         //https://developer.android.com/reference/android/service/notification/StatusBarNotification#getNotification()
     }
+
+  /**
+   * Create and show a simple notification containing the received -notification- FCM message.
+   *
+   * @param messageBody FCM message body received.
+   */
+  private void simpleNotification(String title, String messageBody) {
+
+    Intent intent = new Intent(this, FCMPluginActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+    intent.putExtra("notificationOnly", "yes");
+
+
+    PendingIntent pendingIntent = PendingIntent.getActivity(this, random.nextInt() , intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    // Using same approach as then one used for custom notification
+    //PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT);
+
+    Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+    int notificationIconId = getApplicationContext().getResources().getIdentifier("notification_icon" , "drawable", getPackageName());
+    NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, FCMPlugin.CHANNEL_ID)
+      .setSmallIcon(notificationIconId)
+      .setContentTitle(title)
+      .setContentText(messageBody)
+      .setAutoCancel(true)
+      .setSound(defaultSoundUri)
+      .setContentIntent(pendingIntent);
+
+    NotificationManager notificationManager =
+      (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+    notificationManager.notify(random.nextInt(), notificationBuilder.build());
+  }
+
+
 }
