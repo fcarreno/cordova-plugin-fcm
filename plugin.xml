@@ -18,15 +18,15 @@
   under the License.
 -->
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-           id="cordova-plugin-fcm"
-      version="2.1.15">
+           id="cordova-plugin-fcm-updated"
+      version="1.0.0">
     <name>FCMPlugin</name>
     <description>Cordova FCM Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova, fcm, push, plugin</keywords>
     
     <info>
-		Cordova FCM plugin v2.1.15 installed
+		Cordova FCM Updated plugin v1.0.0 installed
 		For more details visit https://github.com/fcarreno/cordova-plugin-fcm
 	</info>
 	

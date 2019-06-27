@@ -1,13 +1,13 @@
 {
-  "version": "2.1.15",
-  "name": "@fcarreno/cordova-plugin-fcm",
+  "version": "1.0.0",
+  "name": "cordova-plugin-fcm-updated",
   "cordova_name": "Cordova FCM Push Plugin",
   "description": "Google Firebase Cloud Messaging Cordova Push Plugin",
   "license": "MIT",
   "repo": "",
   "issue": "",
   "cordova": {
-    "id": "cordova-plugin-fcm",
+    "id": "cordova-plugin-fcm-updated",
     "platforms": [
       "android",
       "ios"
