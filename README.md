@@ -16,7 +16,7 @@ With the following (Android only...):
 
 #### Installation:
 ```
-$ ionic cordova plugin add @fcarreno/cordova-plugin-fcm
+$ ionic cordova plugin add cordova-plugin-fcm-updated
 ```
 
 #### Note:
